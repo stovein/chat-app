@@ -3,32 +3,17 @@ import aes256 from 'aes256';
 
 export default function SendArea(props) {
     const [ message, setMessage ] = useState('');
-    const { socket, name, room, edch, key } = props;
+    const { socket, name, room, edch, key, rabbit } = props;
     
 
     useEffect(() => {
-        socket.emit('joinPrivateChat', ({sender:name, reciever: room.id}))    
+        socket.emit('joinPrivateChat', ({sender:name, room_id: room.id}))    
     }, [room])
-
-    useEffect(() => {
-        socket.on('allOnline', (isAllOnline) => {
-            console.log(isAllOnline)
-            if (isAllOnline) {
-                socket.emit('setKeys', (edch.getPublicKey()));
-
-                socket.on('getKeys', (publicKey) => {
-                    console.log('got my key');
-                    props.handleOtherKey(edch.computeSecret(publicKey).toString('hex'))
-                })
-            }
-        })
-        
-    })
 
     const handleClick = () => {
         const data = {
             user: name,
-            text: aes256.encrypt(key, message),
+            text: message, //aes256.encrypt(key, message),
             timestamp: new Date(),
         }
         socket.emit('chat', data);

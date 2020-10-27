@@ -13,23 +13,25 @@ export default function SelectRoom(props) {
 
     const roomSelection = () => {
         return (
-            rooms.map((r, i) => {
-                const roomName = r.name;
-                return (
-                <button 
-                    key={i} 
-                    type='submit' 
-                    onClick={() => setRoom(r)}>
-                {roomName}
-                </button>)
-            })
+            <div>
+                <h4> {name}, select a room. </h4>
+                {rooms.map((r, i) => {
+                    const roomName = r.name;
+                    return (
+                    <button 
+                        key={i} 
+                        type='submit' 
+                        onClick={() => setRoom(r)}>
+                    {roomName}
+                    </button>)
+                })}
+            </div>
         );
     }
 
 
     return (
         <div>
-            <h4> {name}, select a room. </h4>
             { room ? <Room name={name} room={room} /> : roomSelection() }
         </div>
     )

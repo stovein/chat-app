@@ -6,6 +6,11 @@ const io = require('socket.io')(http);
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Messages = require('./database/Messages.model');
+const amqp = require('amqplib/callback_api');
+const { consumer, publisher } = require('./rabbitmq/amqpScripts')
+const { joinRoom, get, disconnect } = require('./socket/socketScripts')
+
+require('dotenv').config();
 
 const port = 5000;
 
@@ -13,58 +18,55 @@ const port = 5000;
 // Routing
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "http://localhost:5672");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 app.use(bodyParser.json());
 
 app.get('/' ,(req, res) => res.send('Hello World'))
 
 
 // Database
-const connectionUrl = 'mongodb+srv://talha:*123@chatdb.omhqe.mongodb.net/chat-app?retryWrites=true&w=majority'
+const connectionUrl = process.env.DATABASE_URI
 const options = {useNewUrlParser: true, useUnifiedTopology:true};
 
 let numClients = {};
 
 // WebSocket
 io.on('connection', (socket) => {
-    socket.on('joinPrivateChat', ({sender, reciever, publicKey}) => {
-        //const edch = crypto.createECDH('secp521r1');
-        //const publicKey = edch.generateKeys();
-        //databaseden sender reciever id çekimi
-        // şimdilik kendi verdiğim idler reciever olacak
-        
-        const room_id = reciever;
-        socket.join(room_id, () => {
-            console.log(`${sender} Connected to ${room_id} room`)
-        });
-
+    socket.on('joinPrivateChat', ({sender, room_id}) => {
+        console.log(room_id);
+        joinRoom(socket, room_id);
         numClients[room_id] = get(numClients, room_id, 0) + 1
-        
-        io.sockets.to(room_id).emit('allOnline', numClients[room_id] === 2 ? true : false);
 
-        socket.on('setKeys', (publicKey) => {
-            console.log('setlendim')
-            socket.to(room_id).emit('getKeys', publicKey);
+        socket.on('requestAllMessages', (t) => {
+            amqp.connect('amqp://localhost', function(err, conn) {
+                if (err != null) throw err;
+                consumer(room_id.toString(), conn, io, room_id);
+            });
         })
 
         socket.on('chat', (data) => {
             data = {...data}//, publicKey}
-            io.sockets.to(room_id).emit('chat', data);
+            if (numClients[room_id] === 2) {
+                console.log(numClients)
+                io.sockets.to(room_id).emit('chat', data);
+            }
+            else {
+                console.log(data)
+                amqp.connect('amqp://localhost', function(err, conn) {
+                    if (err != null) throw err;
+                    publisher(room_id.toString(), conn, JSON.stringify(data));
+                });
+            }
+            
+
         })
-        socket.on('disconnect', () => {
-            numClients[room_id] -= 1;
-            console.log(numClients)
-        })
+        
+        disconnect(socket, numClients, room_id);
     })
 })
 
 
 http.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
-
-function get(object, key, default_value) {
-    var result = object[key];
-    return (typeof result !== "undefined") ? result : default_value;
-}

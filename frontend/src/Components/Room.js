@@ -7,7 +7,7 @@ import Messages from './Messages';
 export default function Room(props) {
     const { room, name } = props;
     const [ key, setKey ] = useState('');
-    let socket = socketIOClient('http://127.0.0.1:5000');
+    const socket = socketIOClient('http://127.0.0.1:5000');
     const edch = crypto.createECDH('secp521r1');
     edch.generateKeys();
 
@@ -18,6 +18,7 @@ export default function Room(props) {
                 socket={socket} 
                 edch={edch} 
                 key={key}
+                room={room}
             />
             <SendArea 
                 socket={socket}

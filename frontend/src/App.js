@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import UsernameScreen from './UsernameScreen';
-import SelectRoom from './SelectRoom';
+import UsernameScreen from './Components/UsernameScreen';
+import SelectRoom from './Components/SelectRoom';
 import './App.css';
 
 
