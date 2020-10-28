@@ -5,18 +5,27 @@ import aes256 from 'aes256';
 export default function Messages(props) {
     const [ messages, setMessages ] = useState([])
     let change = false
-    const { socket, key, room } = props;
+    const { socket, publicKey, room, sender } = props;
 
     useEffect( () => {
-        socket.emit('requestAllMessages', true);
-    })
+        socket.emit('requestAllMessages', {room_id: room.id, sender: sender});
+    }, [])
 
     useEffect( () => {
         socket.on('chat', (data) => {
             if (!change) {
                 //data.text = aes256.decrypt(key, data.text);
-                setMessages( m => [...m, data]);
-                console.log(data)
+
+                // ilk mesaj yükleme
+                if ( data.length ) {
+                    setMessages([...data]);
+                }
+                
+                // diğer mesaj yüklemeler
+                else if (data.length !== 0) {
+                    setMessages( m => [...m, data]);
+                }
+
                 change = true;
             }
         })

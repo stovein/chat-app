@@ -1,4 +1,4 @@
-key iki taraflı gitmiyor soket açık olmadığından
-odadan çıkma yok çıkarsa dc olmalı
-db kaydı yok
-her mesajda şifre yenileme yok sanırım
+TODO:
+ - Client-side database henüz kurulmadı.
+ - Notification Yapılmadı
+ - Encryption yapılmadı.

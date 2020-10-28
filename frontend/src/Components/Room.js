@@ -17,13 +17,14 @@ export default function Room(props) {
             <Messages 
                 socket={socket} 
                 edch={edch} 
-                key={key}
+                publicKey={key}
                 room={room}
+                sender={name}
             />
             <SendArea 
                 socket={socket}
                 room={room}
-                key={key}
+                publicKey={key}
                 name={name}
                 edch={edch}
                 handleOtherKey={(v) => setKey(v) }

@@ -1,12 +1,45 @@
 const mongoose = require('mongoose');
-const message = require('./databaseConnection/messageSchema')
+const Message = require('./messageSchema')
 
-const connectionUrl = 'mongodb+srv://talha:*123@chatdb.omhqe.mongodb.net/chat-app?retryWrites=true&w=majority'
+require('dotenv').config()
 
-mongoose.connect(connectionUrl, {useNewUrlParser: true, useUnifiedTopology:true});
+const connectionUrl = process.env.DATABASE_URI;
+const options = {useNewUrlParser: true, useUnifiedTopology:true};
 
-mongoose.model('Messages', message);
+mongoose.connect(connectionUrl, options);
 
-const connection = mongoose.connection;
+dbHandler = function(){};
 
-module.exports = connection;
+//Find Messages
+dbHandler.prototype.find = function(filter, callback) {
+    Message.find({
+        room_id: filter.room_id,
+        sender: { $ne: filter.sender },
+    }, (err, posts) => {
+        if (err) throw err;
+        callback(err, posts)
+    });
+};
+
+//Delete Messages
+dbHandler.prototype.delete = function(filter) {
+    Message.deleteMany({
+        room_id: filter.room_id,
+        sender: { $ne: filter.sender },
+    }, (err) => {
+        if(err) throw err;
+    });
+};
+
+//Create a new Message
+dbHandler.prototype.create = function(message) {
+    Message.create({
+        room_id: message.room_id,
+        sender: message.sender,
+        key: message.key,
+        message: message.message,
+        date: message.date
+    });
+};
+
+module.exports = dbHandler;

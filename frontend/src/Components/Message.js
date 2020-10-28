@@ -1,11 +1,11 @@
 import React from 'react';
 
 export default function Message(props) {
-    const { text, user, timestamp} = props;
+    const { sender, message, date} = props;
     
     return (
         <div>
-            <p>{user}: {text} : {timestamp}</p>
+            <p>{sender}: {message} : {date}</p>
         </div>
     )
 }
