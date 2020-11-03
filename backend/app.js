@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
@@ -5,8 +7,6 @@ const http = require('http').createServer(app);
 const socketConnections = require('./socket/socketScripts');
 const mongoose = require('mongoose');
 const { joinRoom, requestMessages, dictGet, disconnect } = require('./socket/socketScripts')
-
-require('dotenv').config();
 
 const port = 5000;
 

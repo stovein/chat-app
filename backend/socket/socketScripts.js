@@ -1,5 +1,6 @@
 const socketIO = require('socket.io');
 let DatabaseController = require('../database/databaseConnection');
+const notify = require('../Fire/Notification');
 
 let numClients = {};
 
@@ -47,6 +48,7 @@ function Socket(server) {
     }
 
     const oneOffline = (data) => {
+        // notify.sendNotification(data.sender, reciever_token, '', data.message)
         DatabaseController.createNewQueuedMessage(data);
     }
 

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const Message = require('./messageSchema')
 
-require('dotenv').config()
-
 const connectionUrl = process.env.DATABASE_URI;
 const options = {useNewUrlParser: true, useUnifiedTopology:true};
 
