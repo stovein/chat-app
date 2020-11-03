@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Message from './Message';
 import aes256 from 'aes256';
+//import Controller from '../Controllers/Controller';
 
 export default function Messages({ socket, publicKey, room, sender }) {
     const [ messages, setMessages ] = useState([])
