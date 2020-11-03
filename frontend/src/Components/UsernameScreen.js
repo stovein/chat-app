@@ -1,8 +1,9 @@
 import React from 'react';
+import InputArea from './InputArea';
+import SubmitButton from './SubmitButton';
 
-export default function UsernameScreen(props) {
-    const { name, handleNameChange, handleScreenChange } = props;
-
+export default function UsernameScreen({ name, handleNameChange, handleScreenChange }) {
+    
     const handleEnterSend = (e) => {
         if (e.key === "Enter" || e.key === "NumpadEnter") {
             handleScreenChange();
@@ -11,29 +12,13 @@ export default function UsernameScreen(props) {
     
     return (
         <div>
-            <input 
-                style={{width: '100%'}} 
-                type='text' 
-                onChange={(e) => handleNameChange(e.target.value)} 
-                value={name} placeholder='name'
-                onKeyDown={handleEnterSend}>
-            </input>
-            <button 
-                style={style} 
-                type='submit' 
-                onClick={() => handleScreenChange()}>
-                    Gönder
-            </button>    
+            <InputArea 
+                value={name}
+                handleChange={handleNameChange}
+                placeholder={'Your Name'}
+                handleEnterSend={handleEnterSend}
+            />
+            <SubmitButton handleClick={() => handleScreenChange()} />  
         </div>
     )
 }
-
-const style = {
-    display: "block",
-    width: '100%',
-    border: "none",
-    borderRadius: "10%",
-    backgroundColor: "#4CAF50",
-    padding: "14px 28px",
-    textAlign: "center",
-  }

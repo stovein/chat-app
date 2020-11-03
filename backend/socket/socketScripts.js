@@ -1,41 +1,40 @@
 const socketIO = require('socket.io');
-let dbHandler = require('../database/databaseConnection');
-dbHandler = new dbHandler();
+let DatabaseController = require('../database/databaseConnection');
 
 let numClients = {};
 
-module.exports = (server) => {
-    let io = socketIO.listen(server);
+function Socket(server) {
+    socket = undefined;
+    room_id = undefined
 
-    io.on('connection', socketCallback);
-
-    function socketCallback(socket) {
-        socket.on('joinPrivateChat', (room_id) => {
-            joinRoom(socket, room_id);
-            disconnect(socket, room_id);
-        })
-    
-        socket.on('requestAllMessages', ({ room_id, sender }) => {
-            requestMessages(socket, { room_id, sender });
-        });
+    const socketCallback = (s) => {
+        socket = s;
+        socket.on('joinPrivateChat', joinPrivateChat);
         
-        socket.on('chat', (data) => {
-            chatting(data);
-        })    
+        socket.on('requestAllMessages', requestAllMessages);
+        
+        socket.on('chat', chatting);
     };
 
-
-    const joinRoom = (socket, room_id) => {
-        socket.join(room_id, () => {
-            numClients[room_id] = dictGet(numClients, room_id, 0) + 1
-        });
+    const joinPrivateChat = (room) => {
+        room_id = room
+        socket.join(room_id, joinRoom)
+        socket.on('disconnect', disconnect)
     }
 
-    const requestMessages = (socket, filter) => {
-        dbHandler.find(filter, (err, posts) => {
+    const joinRoom = () => {
+        numClients[room_id] = dictGet(numClients, room_id, 0) + 1
+    }
+
+    const disconnect = (room_id) => {
+        numClients[room_id] -= 1;
+    }
+
+    const requestAllMessages = (filter) => {
+        DatabaseController.findQueuedMessages(filter, (err, posts) => {
             if(err) throw err;
             io.sockets.to(socket.id).emit('chat', posts);
-            dbHandler.delete(filter);
+            DatabaseController.deleteQueuedMessages(filter);
         });
     }
 
@@ -48,16 +47,15 @@ module.exports = (server) => {
     }
 
     const oneOffline = (data) => {
-        dbHandler.create(data);
+        DatabaseController.createNewQueuedMessage(data);
     }
 
-    const disconnect = (socket, room_id) => {
-        socket.on('disconnect', () => {
-            numClients[room_id] -= 1;
-        })
-    }
+    io = socketIO.listen(server);
+    io.on('connection', socketCallback);
 }
 
+
+module.exports = Socket;
 
 const dictGet = (object, key, default_value) => {
     var result = object[key];

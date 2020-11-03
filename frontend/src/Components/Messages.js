@@ -2,34 +2,25 @@ import React, { useState, useEffect } from 'react';
 import Message from './Message';
 import aes256 from 'aes256';
 
-export default function Messages(props) {
+export default function Messages({ socket, publicKey, room, sender }) {
     const [ messages, setMessages ] = useState([])
-    let change = false
-    const { socket, publicKey, room, sender } = props;
 
     useEffect( () => {
         socket.emit('requestAllMessages', {room_id: room.id, sender: sender});
-    }, [])
-
-    useEffect( () => {
         socket.on('chat', (data) => {
-            if (!change) {
-                //data.text = aes256.decrypt(key, data.text);
+            //data.text = aes256.decrypt(key, data.text);
 
-                // ilk mesaj yükleme
-                if ( data.length ) {
-                    setMessages([...data]);
-                }
-                
-                // diğer mesaj yüklemeler
-                else if (data.length !== 0) {
-                    setMessages( m => [...m, data]);
-                }
-
-                change = true;
+            // ilk mesaj yükleme
+            if ( data.length ) {
+                setMessages([...data]);
+            }
+            
+            // diğer mesaj yüklemeler
+            else if (data.length !== 0) {
+                setMessages( m => [...m, data]);
             }
         })
-    })
+    }, [])
 
     return (
         <div>

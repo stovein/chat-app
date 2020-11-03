@@ -23,7 +23,7 @@ app.get('/' ,(req, res) => res.send('Hello World'))
 
 
 // WebSocket
-socketConnections(http);
+const socketConnection = new socketConnections(http);
 
 
 http.listen(port, () => console.log(`Example app listening on port ${port}!`));

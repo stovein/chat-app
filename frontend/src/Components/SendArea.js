@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import InputArea from './InputArea';
+import SubmitButton from './SubmitButton';
 import aes256 from 'aes256';
 
-export default function SendArea(props) {
-    const [ message, setMessage ] = useState('');
-    const { socket, name, room, edch, publicKey } = props;
-    
+export default function SendArea({ socket, name, room, edch, publicKey }) {
+    const [ message, setMessage ] = useState('');   
 
     useEffect(() => {
         socket.emit('joinPrivateChat', (room.id))    
@@ -14,6 +14,10 @@ export default function SendArea(props) {
         if (e.key === "Enter" || e.key === "NumpadEnter") {
             handleClick();
         }
+    }
+
+    const handleChange = (e) => {
+        setMessage(e.target.value);
     }
 
     const handleClick = () => {
@@ -30,30 +34,13 @@ export default function SendArea(props) {
     
     return (
         <div>
-            <input 
-                style={{width: '100%'}} 
-                type='text' 
-                onChange={ (e) => setMessage(e.target.value) } 
-                value={message} 
-                placeholder='message'
-                onKeyDown={handleEnterSend}>
-            </input>
-            <button 
-                style={style} 
-                type='submit' 
-                onClick={handleClick}> 
-                Gönder 
-            </button>    
+            <InputArea 
+                value={message}
+                handleChange={handleChange}
+                placeholder={'Your Message'}
+                handleEnterSend={handleEnterSend}
+            />
+            <SubmitButton handleClick={handleClick} />
         </div>
     )
-}
-
-const style = {
-    display: "block",
-    width: '100%',
-    border: "none",
-    borderRadius: "10%",
-    backgroundColor: "#4CAF50",
-    padding: "14px 28px",
-    textAlign: "center",
 }

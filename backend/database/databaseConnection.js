@@ -8,38 +8,33 @@ const options = {useNewUrlParser: true, useUnifiedTopology:true};
 
 mongoose.connect(connectionUrl, options);
 
-dbHandler = function(){};
-
-//Find Messages
-dbHandler.prototype.find = function(filter, callback) {
-    Message.find({
-        room_id: filter.room_id,
-        sender: { $ne: filter.sender },
-    }, (err, posts) => {
-        if (err) throw err;
-        callback(err, posts)
-    });
+const DatabaseController = {
+    findQueuedMessages: function(filter, callback) {
+        Message.find({
+            room_id: filter.room_id,
+            sender: { $ne: filter.sender },
+        }, (err, posts) => {
+            if (err) throw err;
+            callback(err, posts)
+        })
+    },
+    deleteQueuedMessages: function(filter) {
+        Message.deleteMany({
+            room_id: filter.room_id,
+            sender: { $ne: filter.sender },
+        }, (err) => {
+            if(err) throw err;
+        });
+    },
+    createNewQueuedMessage: function(message) {
+        Message.create({
+            room_id: message.room_id,
+            sender: message.sender,
+            key: message.key,
+            message: message.message,
+            date: message.date
+        });
+    },
 };
 
-//Delete Messages
-dbHandler.prototype.delete = function(filter) {
-    Message.deleteMany({
-        room_id: filter.room_id,
-        sender: { $ne: filter.sender },
-    }, (err) => {
-        if(err) throw err;
-    });
-};
-
-//Create a new Message
-dbHandler.prototype.create = function(message) {
-    Message.create({
-        room_id: message.room_id,
-        sender: message.sender,
-        key: message.key,
-        message: message.message,
-        date: message.date
-    });
-};
-
-module.exports = dbHandler;
+module.exports = DatabaseController;

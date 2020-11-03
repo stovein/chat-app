@@ -1,38 +1,13 @@
 import React, { useState } from 'react';
 import Room from "./Room";
+import RoomSelection from "./RoomSelection";
 
-export default function SelectRoom(props) {
+export default function SelectRoom({ name }) {
     const [ room, setRoom ] = useState('');
-    const { name } = props;
-    const rooms = [
-        {name: 'Hebele', id:111111111111},
-        {name: 'Laciverte Boyayanlar', id:222222222},
-        {name: '35 kuruş', id:333333333},
-        {name: 'Ebelere Atlayanlar', id:444444444}
-    ]
-
-    const roomSelection = () => {
-        return (
-            <div>
-                <h4> {name}, select a room. </h4>
-                {rooms.map((r, i) => {
-                    const roomName = r.name;
-                    return (
-                    <button 
-                        key={i} 
-                        type='submit' 
-                        onClick={() => setRoom(r)}>
-                    {roomName}
-                    </button>)
-                })}
-            </div>
-        );
-    }
-
 
     return (
         <div>
-            { room ? <Room name={name} room={room} /> : roomSelection() }
+            { room ? <Room name={name} room={room} /> : <RoomSelection name={ name } setRoom={setRoom} /> }
         </div>
     )
 }

@@ -4,8 +4,7 @@ import crypto from 'crypto';
 import SendArea from "./SendArea";
 import Messages from './Messages';
 
-export default function Room(props) {
-    const { room, name } = props;
+export default function Room({ room, name }) {
     const [ key, setKey ] = useState('');
     const socket = socketIOClient('http://127.0.0.1:5000');
     const edch = crypto.createECDH('secp521r1');
