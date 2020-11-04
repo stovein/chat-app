@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const http = require('http').createServer(app);
 const socketConnections = require('./socket/socketScripts');
 const mongoose = require('mongoose');
-const { joinRoom, requestMessages, dictGet, disconnect } = require('./socket/socketScripts')
 
 const port = 5000;
 
