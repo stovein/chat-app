@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+/src/fcmConfig.json
+/public/fcmConfig.json
 
 # testing
 /coverage

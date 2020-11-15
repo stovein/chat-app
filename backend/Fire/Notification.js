@@ -1,34 +1,34 @@
-var FCM = require('fcm-push');
+var FCM = require("fcm-push");
 
 var fcm = new FCM(process.env.SERVER_KEY);
 
 module.exports = {
-    sendNotification: function(user_id = '', device_token = '', type = '', msg_body = '') {
-        var message = {
-            to: device_token,
-            data: {
-                user_id: user_id,
-                title: 'My App', // you can replace your app name here
-                body: msg_body,
-                type :type, // type is for internal purpose, to identify the type of notification within app
-            },
-        };
-        
-        fcm.send(message, function(err, response){
-            if (err) {
-                console.log("Something has gone wrong!:", err);
-            } 
-            else {
-                console.log("Successfully sent with response: ", response);
-            }
-            return;
-        });
-        return;
-    }
+	sendNotification: function (
+		data = {},
+		device_token = "",
+		user_id = "",
+		type = ""
+	) {
+		var message = {
+			to: device_token,
+			data,
+			notification: {
+				title: "Chat-App",
+				body: `${"Somebody"} has sent you a message`,
+			},
+		};
+
+		fcm.send(message, function (err, response) {
+			if (err) {
+				console.log("Something has gone wrong!:", err);
+			} else {
+				console.log("Successfully sent with response: ", response);
+			}
+			return;
+		});
+		return;
+	},
 };
-
-
-
 
 /*const fcm = require('fcm-notification');
 const FCM = new fcm('key.json');
